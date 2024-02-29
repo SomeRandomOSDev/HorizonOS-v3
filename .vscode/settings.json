@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "stddef.h": "c",
+        "math.h": "c"
+    }
+}

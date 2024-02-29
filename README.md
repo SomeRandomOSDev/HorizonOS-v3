@@ -7,6 +7,8 @@
     - ✅ puts
     - ✅ printf
 - ⬜ Create a basic memory manager
+    - ✅ malloc
+    - ⬜ free
 - ⬜ Add a GDT
 - ⬜ Add an IDT
 - ⬜ Add the 32 exceptions in the IDT

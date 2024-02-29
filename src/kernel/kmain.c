@@ -1,5 +1,15 @@
-#include "includes.h"
+#include <stddef.h>
+#include <stdint.h>
+#include <stdbool.h>
 
+uint32_t totalMem = 0, availableMem = 0;
+
+#include "multiboot.h"
+#include "io.h"
+
+multiboot_info_t* multibootInfo;
+
+#include "klibc/math.h"
 #include "klibc/stdio.h"
 #include "klibc/string.h"
 #include "klibc/stdlib.h"
@@ -20,12 +30,12 @@ extern uint8_t _kernelEnd;
 void* kernelStart = &_kernelStart;
 void* kernelEnd = &_kernelEnd;
 
-uint64_t totalMem = 0, availableMem = 0;
-
-void kmain(multiboot_info_t* multibootInfo, uint32_t magicNumber)
+void kmain(multiboot_info_t* _multibootInfo, uint32_t magicNumber)
 {
     ClearScreen(' ');
     ResetCursor();
+
+    multibootInfo = _multibootInfo;
 
     if(magicNumber != MULTIBOOT_BOOTLOADER_MAGIC) 
     {
@@ -46,8 +56,8 @@ void kmain(multiboot_info_t* multibootInfo, uint32_t magicNumber)
     {
         multiboot_memory_map_t* mmmt = (multiboot_memory_map_t*)(multibootInfo->mmap_addr + i);
 
-        // uint64_t addr = (mmmt->addr_high << 8) | mmmt->addr_low;
-        uint64_t len = (mmmt->len_high) | mmmt->len_low;
+        uint32_t addr = (mmmt->addr_high << 8) | mmmt->addr_low;
+        uint32_t len = (mmmt->len_high) | mmmt->len_low;
  
         if(mmmt->type == MULTIBOOT_MEMORY_AVAILABLE) 
         {
@@ -55,15 +65,18 @@ void kmain(multiboot_info_t* multibootInfo, uint32_t magicNumber)
             // (mmmt->addr_high << 8) | mmmt->addr_low, (mmmt->len_high) | mmmt->len_low);
             mmmt->addr_low, mmmt->len_low);
 
-            availableMem += len;
+            if(addr == 0)
+                availableMem += 0x78200;
+            else
+                availableMem += len;
         }
 
         totalMem += len;
     }
 
-    uint64_t totalMem_short = totalMem;
+    uint32_t totalMem_short = totalMem;
     uint8_t totalMem_magnitude = 0;
-    uint64_t availableMem_short = availableMem;
+    uint32_t availableMem_short = availableMem;
     uint8_t availableMem_magnitude = 0;
 
     while(totalMem_short >= 1024)
@@ -79,8 +92,16 @@ void kmain(multiboot_info_t* multibootInfo, uint32_t magicNumber)
     }
 
     putc('\n');
-    printf("Total RAM: \t %d%s (%dB)\n", (uint16_t)totalMem_short, byteMagnitude[totalMem_magnitude % 5], totalMem);
-    printf("Usable: \t %d%s (%dB)\n", (uint16_t)availableMem_short, byteMagnitude[availableMem_magnitude % 5], availableMem);
+    printf("Total RAM: \t %d%s (%dB)\n", (uint32_t)totalMem_short, byteMagnitude[totalMem_magnitude % 5], totalMem);
+    printf("Usable: \t %d%s (%dB)\n", (uint32_t)availableMem_short, byteMagnitude[availableMem_magnitude % 5], availableMem);
+
+    initMemAlloc(256);
+
+    malloc(1500);
+    malloc(50);
+    malloc(512);
+
+    printMemState(0);
 
     while(true);
 }

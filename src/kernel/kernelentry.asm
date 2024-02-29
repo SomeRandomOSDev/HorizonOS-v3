@@ -16,6 +16,11 @@ section .text
 global _start
 _start:
 [bits 32]
+	mov ebp, stack_top
+	mov esp, stack_top
+
+	cli
+
 	push eax ; magic number
 	push ebx ; multiboot info
 
@@ -53,6 +58,6 @@ halt:
 ;     ret
 
 section .data
-align 16
-times 16384 db 0
+align 1
+times 16384 dd 0
 stack_top:
