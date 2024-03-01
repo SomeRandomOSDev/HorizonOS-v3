@@ -1,8 +1,8 @@
 global LoadGDT
-extern gdtPtr
+extern _gdtr
 ; void LoadGDT()
 LoadGDT:
-    lgdt  [gdtPtr]
+    lgdt  [_gdtr]
     jmp 0x08:.reloadSeg
 .reloadSeg:
     mov   ax, 0x10

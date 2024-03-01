@@ -1,11 +1,11 @@
 ENTRY(_start)
-/* STARTUP("bin/kernelentry.o") */
 
 INPUT
 (
 	"bin/kernelentry.o"
  	"bin/kmain.o"
 	"bin/gdt.o"
+	"bin/idt.o"
 )
  
 SECTIONS

@@ -134,7 +134,7 @@ void puts(char* str)
 	UpdateCursor();
 }
 
-void printd(int val)
+void printd(int32_t val)
 {
 	if(val < 0)
 	{
@@ -161,10 +161,32 @@ void printd(int val)
 	}
 }
 
+void printu(uint32_t val)
+{
+	if(val < 10)
+	{
+		outc(val + '0');
+	}
+	else
+	{
+		bool first0 = true;
+		uint32_t div = 1000000000;
+		for(uint8_t i = 0; i < 10; i++)
+		{
+			uint8_t digit = (val / div) % 10;
+			if(digit)
+				first0 = false;
+			if(!first0)
+				outc(digit + '0');
+			div /= 10;
+		}
+	}
+}
+
 char hex[16] = "0123456789abcdef";
 char HEX[16] = "0123456789ABCDEF";
 
-void printx(unsigned int val)
+void printx(uint32_t val)
 {
 	if(val < 16)
 	{
@@ -186,7 +208,7 @@ void printx(unsigned int val)
 	}
 }
 
-void printX(unsigned int val)
+void printX(uint32_t val)
 {
 	if(val < 16)
 	{
@@ -239,17 +261,22 @@ void printf(char* fmt, ...)
 				break;
 
 			case 'd':
-				printd(*(int*)arg);
+				printd(*(int32_t*)arg);
+
+				break;
+
+			case 'u':
+				printu(*(uint32_t*)arg);
 
 				break;
 
 			case 'x':
-				printx(*(int*)arg);
+				printx(*(uint32_t*)arg);
 
 				break;
 
 			case 'X':
-				printX(*(int*)arg);
+				printX(*(uint32_t*)arg);
 
 				break;
 

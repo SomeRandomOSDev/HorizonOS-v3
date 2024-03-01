@@ -4,8 +4,12 @@
 
 uint32_t totalMem = 0, availableMem = 0;
 
+void EnableInterrupts()  { asm("sti"); }
+void DisableInterrupts() { asm("cli"); }
+
 #include "multiboot.h"
-#include "io.h"
+#include "IO/io.h"
+#include "IO/parallel.h"
 
 multiboot_info_t* multibootInfo;
 
@@ -14,7 +18,12 @@ multiboot_info_t* multibootInfo;
 #include "klibc/string.h"
 #include "klibc/stdlib.h"
 
+#include "PIT/pit.h"
+
 #include "GDT/gdt.h"
+#include "IDT/PIC.h"
+#include "IDT/int.h"
+#include "IDT/idt.h"
 
 #define KB 1024
 #define MB (1024 * KB)
@@ -98,17 +107,45 @@ void kmain(multiboot_info_t* _multibootInfo, uint32_t magicNumber)
     printf("Usable: \t %d%s (%dB)\n", (uint32_t)availableMem_short, byteMagnitude[availableMem_magnitude % 5], availableMem);
 
     putc('\n');
-    printf("Initializing malloc()...\n");
-    initMemAlloc(256);
 
-    printf("Loading a GDT...\n");
-    
+    printf("Loading a GDT...");
     memset(&GDT[0], 0, sizeof(struct GDT_Entry));   // NULL Descriptor
-
     SetupGDTEntry(&GDT[1], 0, 0xfffff, 0x9a, 0xc);  // Kernel mode code segment
     SetupGDTEntry(&GDT[2], 0, 0xfffff, 0x92, 0xc);  // Kernel mode data segment
-
     InstallGDT();
+    printf(" | Done\n");
 
-    while(true);
+    printf("Loading an IDT...");
+    InstallIDT();
+    EnableInterrupts();
+    printf(" | Done\n");
+
+    printf("Initializing the PIC...");
+    PIC_Remap(32, 32 + 8);
+    printf(" | Done\n");
+
+    printf("Initializing the PIT...");
+    PIT_Channel0_SetFrequency(1000);
+    printf(" | Done\n");
+
+    printf("Initializing memory allocation...");
+    initMemAlloc(256);
+    printf(" | Done\n");
+
+    printf("Initializing parallel ports...");
+    InitParallel();
+    printf(" | Done\n");
+
+    putc('\n');
+
+    printf("LPT1: 0x%x\n", LPT1);
+    printf("LPT2: 0x%x\n", LPT2);
+    printf("LPT3: 0x%x\n", LPT3);
+
+    putc('\n');
+
+    while(true)
+    {
+        printf("%d\r", (uint32_t)globalTimer / 1000);
+    }
 }

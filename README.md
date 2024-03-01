@@ -10,13 +10,13 @@
     - ✅ malloc
     - ✅ free
 - ✅ Add a GDT
-- ⬜ Add an IDT
-- ⬜ Add the 32 exceptions in the IDT
-- ⬜ Handle IRQs
-    - ⬜ Handle the PIT timer 0
+- ✅ Add an IDT
+- ✅ Add the 32 exceptions in the IDT
+- ✅ Handle IRQs
+    - ✅ Handle PIT's channel 0
     - ⬜ Handle PS/2 keyboard
     - ⬜ Handle PS/2 mouse
-    - ⬜ Handle spurious IRQs
+    - ✅ Handle spurious IRQs
 - ⬜ Add PCI bus scanning
 - ⬜ Add PRNGs
 - ⬜ Implement paging
@@ -27,5 +27,4 @@
 - ⬜ Implement a basic ATA driver
 - ⬜ Implement the FAT file system
 - ⬜ Implement symmetric multiprocessing
-- ⬜ Implement a Sound Blaster 16 driver
 - ⬜ Add a USB driver

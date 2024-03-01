@@ -34,13 +34,6 @@ halt:
   	hlt
 	jmp $
 
-; global LoadIDT
-; extern _idtr
-; ; void LoadIDT()
-; LoadIDT:
-;     lidt [_idtr]
-;     ret
-
 section .data
 align 1
 times 16384 dd 0

@@ -6,7 +6,7 @@ struct GDT_Descriptor
     uint32_t address;   // The linear address of the GDT (not the physical address, paging applies).
 } __attribute__((__packed__));
 
-struct GDT_Descriptor gdtPtr;
+struct GDT_Descriptor _gdtr;
 
 struct GDT_Entry
 {   
@@ -36,8 +36,8 @@ void SetupGDTEntry(struct GDT_Entry* entry, uint32_t base, uint32_t limit, uint8
 
 void InstallGDT()
 {
-    gdtPtr.size = sizeof(GDT) - 1;
-    gdtPtr.address = (uint32_t)&GDT;
+    _gdtr.size = sizeof(GDT) - 1;
+    _gdtr.address = (uint32_t)&GDT;
 
     LoadGDT();
 }
