@@ -9,12 +9,21 @@ void abort()
     halt();
 }
 
-void* mapAddress(uint32_t address)
+void* mapLinearAddressToAvailableMemory(uint32_t address)
 {
     if(address < 0x78200)   // Lower conventional memory
         return (void*)(address + 0x7e00);
 
     return NULL;
+}
+
+uint32_t mapAvailableMemoryToLinearAddress(void* ptr)
+{
+    uint32_t address = (uint32_t)ptr;
+    if(address >= 0x7e00 && address < 0x80000)   // Lower conventional memory
+        return address - 0x7e00;
+
+    return 0;
 }
 
 bool isPtrAvailable(void* ptr)
@@ -48,16 +57,16 @@ void initMemAlloc(uint16_t _blockSize)
     bitmapSize = totalBlocks / 8;
 
     for(uint32_t i = 0; i < bitmapSize; i++)
-        *(uint8_t*)mapAddress(i) = 0xff;        // Every block is free
+        *(uint8_t*)mapLinearAddressToAvailableMemory(i) = 0xff;        // Every block is free
     for(uint32_t i = bitmapSize; i < 2 * bitmapSize; i++)
-        *(uint8_t*)mapAddress(i) = 0xff;        // Every block is the first one
+        *(uint8_t*)mapLinearAddressToAvailableMemory(i) = 0xff;        // Every block is the first one
 
     freeMemAddress = 2 * bitmapSize;
 }
 
 void setBlockFree(uint32_t blockNumber, bool isFree)
 {
-    uint8_t* blockByte = mapAddress(blockNumber / 8);
+    uint8_t* blockByte = mapLinearAddressToAvailableMemory(blockNumber / 8);
     uint8_t blockBit = 7 - (blockNumber % 8);
     
     *blockByte &= (0xff ^ (1 << blockBit));
@@ -66,7 +75,7 @@ void setBlockFree(uint32_t blockNumber, bool isFree)
 
 void setBlockAsFirstBlock(uint32_t blockNumber, bool isFirstBlock)
 {
-    uint8_t* blockByte = mapAddress((blockNumber / 8) + bitmapSize);
+    uint8_t* blockByte = mapLinearAddressToAvailableMemory((blockNumber / 8) + bitmapSize);
     uint8_t blockBit = 7 - (blockNumber % 8);
     
     *blockByte &= (0xff ^ (1 << blockBit));
@@ -75,7 +84,7 @@ void setBlockAsFirstBlock(uint32_t blockNumber, bool isFirstBlock)
 
 bool isBlockFree(uint32_t blockNumber)
 {
-    uint8_t* blockByte = mapAddress(blockNumber / 8);
+    uint8_t* blockByte = mapLinearAddressToAvailableMemory(blockNumber / 8);
     uint8_t blockBit = 7 - (blockNumber % 8);
     
     return (*blockByte >> blockBit) & 1;
@@ -83,7 +92,7 @@ bool isBlockFree(uint32_t blockNumber)
 
 bool isBlockAFirstBlock(uint32_t blockNumber)
 {
-    uint8_t* blockByte = mapAddress((blockNumber / 8) + bitmapSize);
+    uint8_t* blockByte = mapLinearAddressToAvailableMemory((blockNumber / 8) + bitmapSize);
     uint8_t blockBit = 7 - (blockNumber % 8);
     
     return (*blockByte >> blockBit) & 1;
@@ -96,14 +105,20 @@ void printMemState(uint32_t block)
     for(uint32_t i = block; (i < block + 80 * 25) && (i < totalBlocks); i++)
     {
         if(isBlockFree(i))
-            textColor = BG_LIGHTGREEN | FG_BLACK;
-        else
-            textColor = BG_LIGHTBLUE | FG_BLACK;
+        {
+            textColor = BG_GREEN | FG_BLACK;//BG_LIGHTGREEN | FG_BLACK;
 
-        if(isBlockAFirstBlock(i))
-            outc('#');
+            outc('/');
+        }
         else
-            outc('+');
+        {
+            textColor = BG_BLUE | FG_BLACK;
+
+            if(isBlockAFirstBlock(i))
+                outc('#');
+            else
+                outc('+');
+        }
     }
 
     while(true);
@@ -139,11 +154,36 @@ void* malloc(size_t size)
                 setBlockFree(j + blockNum, false);
 
             // printf("\nBlock: %d, %d blocks\n", blockNum, numBlocks);
-            // printf("Address: 0x%x\n\n", mapAddress(blockNum * blockSize + freeMemAddress));
+            // printf("Address: 0x%x\n\n", mapLinearAddressToAvailableMemory(blockNum * blockSize + freeMemAddress));
 
-            return mapAddress(blockNum * blockSize + freeMemAddress); 
+            return mapLinearAddressToAvailableMemory(blockNum * blockSize + freeMemAddress); 
         }
     }
 
     return NULL;
+}
+
+void* calloc(size_t nitems, size_t size)
+{
+    void* ptr = malloc(nitems * size);
+    memset(ptr, 0, nitems * size);
+    return ptr;
+}
+
+void free(void* ptr)
+{
+    uint32_t address = mapAvailableMemoryToLinearAddress(ptr);
+    uint32_t blockNum = (address - freeMemAddress) / blockSize;
+
+    do
+    {
+        setBlockFree(blockNum, true);
+        blockNum++;
+    } while (!isBlockAFirstBlock(blockNum));
+}
+
+void* realloc(void* ptr, size_t size)
+{
+    free(ptr);
+    return malloc(size);
 }

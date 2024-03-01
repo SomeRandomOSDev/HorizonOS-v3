@@ -14,6 +14,8 @@ multiboot_info_t* multibootInfo;
 #include "klibc/string.h"
 #include "klibc/stdlib.h"
 
+#include "GDT/gdt.h"
+
 #define KB 1024
 #define MB (1024 * KB)
 #define GB (1024 * MB)
@@ -95,13 +97,18 @@ void kmain(multiboot_info_t* _multibootInfo, uint32_t magicNumber)
     printf("Total RAM: \t %d%s (%dB)\n", (uint32_t)totalMem_short, byteMagnitude[totalMem_magnitude % 5], totalMem);
     printf("Usable: \t %d%s (%dB)\n", (uint32_t)availableMem_short, byteMagnitude[availableMem_magnitude % 5], availableMem);
 
+    putc('\n');
+    printf("Initializing malloc()...\n");
     initMemAlloc(256);
 
-    malloc(1500);
-    malloc(50);
-    malloc(512);
+    printf("Loading a GDT...\n");
+    
+    memset(&GDT[0], 0, sizeof(struct GDT_Entry));   // NULL Descriptor
 
-    printMemState(0);
+    SetupGDTEntry(&GDT[1], 0, 0xfffff, 0x9a, 0xc);  // Kernel mode code segment
+    SetupGDTEntry(&GDT[2], 0, 0xfffff, 0x92, 0xc);  // Kernel mode data segment
+
+    InstallGDT();
 
     while(true);
 }

@@ -5,6 +5,7 @@ INPUT
 (
 	"bin/kernelentry.o"
  	"bin/kmain.o"
+	"bin/gdt.o"
 )
  
 SECTIONS

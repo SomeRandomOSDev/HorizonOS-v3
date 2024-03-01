@@ -99,12 +99,14 @@ void outc(char c)
 		break;
 
 	case '\t':
+	{
 		// for(uint8_t i = 0; i < TAB_LENGTH; i++)
 		uint8_t firstTabX = (textCursor % 80) / TAB_LENGTH;
 		while(firstTabX == (textCursor % 80) / TAB_LENGTH)
 			outc(' ');
 
 		break;
+	}
 
 	default:
 		*((uint8_t*)0xb8000 + 2 * textCursor) = c;
