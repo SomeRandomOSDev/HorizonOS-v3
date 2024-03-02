@@ -23,3 +23,4 @@ horizonos.iso: src/kernel/kernelentry.asm Makefile clean
 clean:
 	rm -rf bin/*
 	rm -rf iso
+	rm -f horizonos.iso
