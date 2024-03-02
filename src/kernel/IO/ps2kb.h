@@ -149,5 +149,6 @@ void PS2_KB_SetKeyState(uint16_t key, bool state);
 bool PS2_KB_GetKeyState(uint16_t key);
 uint16_t PS2_KB_GetKey(uint8_t scancode, bool extended);
 uint16_t PS2_KB_GetFormattedKey(uint8_t scancode, bool extended);
+uint16_t PS2_KB_GetTextKey();
 bool PS2_KB_AnyKeyPressed();
 void HandleIRQ1();

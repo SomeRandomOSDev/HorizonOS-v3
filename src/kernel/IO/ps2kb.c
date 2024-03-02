@@ -152,6 +152,13 @@ uint16_t PS2_KB_GetFormattedKey(uint8_t scancode, bool extended)
     return 0;
 }
 
+uint16_t PS2_KB_GetTextKey()
+{
+    kb_text_key_down = false;
+
+    return PS2_KB_GetFormattedKey(kb_text_key_scancode, kb_text_key_extended);
+}
+
 bool PS2_KB_AnyKeyPressed()
 {
     for(uint8_t i = 0; i < 128; i++)

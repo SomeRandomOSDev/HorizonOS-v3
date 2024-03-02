@@ -260,5 +260,34 @@ void printf(char* fmt, ...)
 
 char* gets(char* str)
 {
-	return NULL;
+	while(PS2_KB_GetKeyState('\n'));
+	uint16_t cursor_start_pos = textCursor;
+    uint8_t size = 0;
+    while(!PS2_KB_GetKeyState('\n'))
+    {
+        if(kb_text_key_down)
+        {
+            uint16_t key = PS2_KB_GetTextKey();
+            if(!(key == '\b' && cursor_start_pos == textCursor))
+            {
+                if(key != '\b' && key != '\n' && key != KB_DELETE)
+                {
+                    str[size] = key;
+                    size++;
+                    putc(key);
+                }
+                else if(key == '\b')
+                {
+                    size--;
+                    putc('\b');
+                }
+            }
+        }
+    }
+
+    str[size] = '\0';
+
+    putc('\n');
+
+    return str;
 }
