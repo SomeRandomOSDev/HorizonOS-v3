@@ -9,7 +9,6 @@ void DisableInterrupts() { asm("cli"); }
 
 #include "multiboot.h"
 #include "IO/io.h"
-#include "IO/parallel.h"
 
 multiboot_info_t* multibootInfo;
 
@@ -18,8 +17,10 @@ multiboot_info_t* multibootInfo;
 #include "klibc/string.h"
 #include "klibc/stdlib.h"
 
-#include "PIT/pit.h"
+#include "IO/parallel.h"
+#include "IO/ps2kb.h"
 
+#include "PIT/pit.h"
 #include "GDT/gdt.h"
 #include "IDT/PIC.h"
 #include "IDT/int.h"
@@ -105,6 +106,7 @@ void kmain(multiboot_info_t* _multibootInfo, uint32_t magicNumber)
     putc('\n');
     printf("Total RAM: \t %d%s (%dB)\n", (uint32_t)totalMem_short, byteMagnitude[totalMem_magnitude % 5], totalMem);
     printf("Usable: \t %d%s (%dB)\n", (uint32_t)availableMem_short, byteMagnitude[availableMem_magnitude % 5], availableMem);
+    printf("Kernel size: %d\n", kernelEnd - kernelStart);
 
     putc('\n');
 
@@ -117,7 +119,6 @@ void kmain(multiboot_info_t* _multibootInfo, uint32_t magicNumber)
 
     printf("Loading an IDT...");
     InstallIDT();
-    EnableInterrupts();
     printf(" | Done\n");
 
     printf("Initializing the PIC...");
@@ -127,6 +128,15 @@ void kmain(multiboot_info_t* _multibootInfo, uint32_t magicNumber)
     printf("Initializing the PIT...");
     PIT_Channel0_SetFrequency(1000);
     printf(" | Done\n");
+
+    printf("Initializing the keyboard...");
+    kb_layout = KB_AZERTY;
+    PS2_KB_Init();
+    PS2_KB_ResetKeyboard();
+    PS2_KB_SetScancodeSet(2);
+    printf(" | Done\n");
+
+    EnableInterrupts();
 
     printf("Initializing memory allocation...");
     initMemAlloc(256);
@@ -144,8 +154,23 @@ void kmain(multiboot_info_t* _multibootInfo, uint32_t magicNumber)
 
     putc('\n');
 
-    while(true)
+    // while(true)
+    // {
+    //     printf("%d.%d%d", (uint32_t)globalTimer / 1000, ((uint32_t)globalTimer / 100) % 10, ((uint32_t)globalTimer / 10) % 10);
+    //     outc('\r');     // Dont update the cursor
+    // }
+
+    while(true) 
     {
-        printf("%d\r", (uint32_t)globalTimer / 1000);
+        if(PS2_KB_GetKeyState('a'))
+        {
+            putc('A');
+            outc('\r');
+        }
+        else
+        {
+            outc(' ');
+            putc('\r');
+        }
     }
 }

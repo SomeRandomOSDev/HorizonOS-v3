@@ -14,7 +14,7 @@
 - ✅ Add the 32 exceptions in the IDT
 - ✅ Handle IRQs
     - ✅ Handle PIT's channel 0
-    - ⬜ Handle PS/2 keyboard
+    - ✅ Handle PS/2 keyboard
     - ⬜ Handle PS/2 mouse
     - ✅ Handle spurious IRQs
 - ⬜ Add PCI bus scanning

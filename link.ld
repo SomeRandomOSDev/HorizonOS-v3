@@ -27,8 +27,6 @@ SECTIONS
 	.data BLOCK(4K) : ALIGN(4K)
 	{
 		*(.data)
-
-		_kernelEnd = .;
 	}
  
 	.bss BLOCK(4K) : ALIGN(4K)
@@ -36,4 +34,6 @@ SECTIONS
 		*(COMMON)
 		*(.bss)
 	}
+
+	_kernelEnd = .;
 }

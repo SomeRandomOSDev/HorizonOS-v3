@@ -96,23 +96,7 @@ void InterruptHandler(uint8_t interruptNumber, uint8_t errorCode)
             break;
 
         case 1:
-            // PS2KeyboardHandler();
-            // if(PS2KBGetKeyState(KB_LCTRL) && PS2KBGetKeyState(KB_LSHIFT) && PS2KBGetKeyState('m'))
-            //     memDump((void*)currTask->registers.esp);
-            // if(PS2KBGetKeyState(KB_LCTRL) && PS2KBGetKeyState('m'))
-            //     memDump((void*)FREE_MEMORY_START);
-            // if(PS2KBGetKeyState(KB_LCTRL) && PS2KBGetKeyState('r'))
-            // {
-            //     ClearScreen(BG_BLACK | FG_WHITE);
-            //     SetCursorPos(0, 0);
-            //     registerDump(taskA.registers);
-            //     putc('\n');
-            //     registerDump(taskB.registers);
-            //     // putc('\n');
-            //     // registerDump(taskC.registers);
-
-            //     while(true);
-            // }
+            HandleIRQ1();
             break;
 
         default:
