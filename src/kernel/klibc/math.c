@@ -1,17 +1,30 @@
 #pragma once
 
-float floor(float x)
+double floor(double x)
 {
     int _x = (int)x;
-    return (float)_x;
+    return (double)_x;
 }
 
-float ceil(float x)
+double ceil(double x)
 {
-    float floorX = floor(x);
+    double floorX = floor(x);
 
     if(x == floorX)
         return x;
 
     return floorX + 1;
+}
+
+double fabs(double x)
+{
+    return (x < 0) ? -x : x;
+}
+
+double fmod(double x, double y) // Unsure
+{
+    while(x >= y)
+        x -= y;
+
+    return x;
 }

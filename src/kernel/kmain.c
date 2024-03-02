@@ -4,8 +4,8 @@
 
 uint32_t totalMem = 0, availableMem = 0;
 
-void EnableInterrupts()  { asm("sti"); }
-void DisableInterrupts() { asm("cli"); }
+#define EnableInterrupts()  asm("sti");
+#define DisableInterrupts() asm("cli");
 
 #include "multiboot.h"
 #include "IO/io.h"
@@ -20,6 +20,7 @@ multiboot_info_t* multibootInfo;
 #include "IO/parallel.h"
 #include "IO/ps2kb.h"
 #include "IO/ps2.h"
+#include "PCI/pci.h"
 
 #include "PIT/pit.h"
 #include "GDT/gdt.h"
@@ -36,6 +37,7 @@ multiboot_info_t* multibootInfo;
 
 #include "IO/parallel.c"
 #include "IO/ps2kb.c"
+#include "PCI/pci.c"
 
 #include "PIT/pit.c"
 #include "GDT/gdt.c"
@@ -63,7 +65,7 @@ void kmain(multiboot_info_t* _multibootInfo, uint32_t magicNumber)
 {
     textColor = FG_WHITE | BG_BLACK;
     textCursor = 0;
-    
+
     ClearScreen(' ');
     ResetCursor();
 
@@ -171,6 +173,12 @@ void kmain(multiboot_info_t* _multibootInfo, uint32_t magicNumber)
     printf("LPT1: 0x%x\n", LPT1);
     printf("LPT2: 0x%x\n", LPT2);
     printf("LPT3: 0x%x\n", LPT3);
+
+    putc('\n');
+
+    printf("Scanning PCI buses...\n");
+    PCI_ScanBuses();
+    printf("...Done\n");
 
     putc('\n');
 

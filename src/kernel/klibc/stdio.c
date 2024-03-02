@@ -83,10 +83,10 @@ void outc(char c)
 		textCursor++;
 	}
 
-	if(textCursor / 80 == 24)	// Last line
+	if((textCursor / 80) == 25)	// Last line
 	{
 		textCursor -= 80;
-		memcpy((void*)0xb8000, (void*)0xb8000 + 80 * 2, 80 * 24 * 2);
+		memcpy((void*)0xb8000, (void*)0xb8000 + 80 * 2, 80 * 25 * 2);
 	}
 }
 
