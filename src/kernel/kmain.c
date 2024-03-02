@@ -19,12 +19,29 @@ multiboot_info_t* multibootInfo;
 
 #include "IO/parallel.h"
 #include "IO/ps2kb.h"
+#include "IO/ps2.h"
 
 #include "PIT/pit.h"
 #include "GDT/gdt.h"
 #include "IDT/PIC.h"
 #include "IDT/int.h"
 #include "IDT/idt.h"
+
+//-----------------------------------------------------------------
+
+#include "klibc/math.c"
+#include "klibc/stdio.c"
+#include "klibc/string.c"
+#include "klibc/stdlib.c"
+
+#include "IO/parallel.c"
+#include "IO/ps2kb.c"
+
+#include "PIT/pit.c"
+#include "GDT/gdt.c"
+#include "IDT/PIC.c"
+#include "IDT/int.c"
+#include "IDT/idt.c"
 
 #define KB 1024
 #define MB (1024 * KB)
@@ -154,23 +171,10 @@ void kmain(multiboot_info_t* _multibootInfo, uint32_t magicNumber)
 
     putc('\n');
 
-    // while(true)
-    // {
-    //     printf("%d.%d%d", (uint32_t)globalTimer / 1000, ((uint32_t)globalTimer / 100) % 10, ((uint32_t)globalTimer / 10) % 10);
-    //     outc('\r');     // Dont update the cursor
-    // }
+    char buf[40] = { 0 };
 
     while(true) 
     {
-        if(PS2_KB_GetKeyState('a'))
-        {
-            putc('A');
-            outc('\r');
-        }
-        else
-        {
-            outc(' ');
-            putc('\r');
-        }
+        gets(&buf[0]);
     }
 }
