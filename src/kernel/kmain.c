@@ -61,6 +61,9 @@ void* kernelEnd = &_kernelEnd;
 
 void kmain(multiboot_info_t* _multibootInfo, uint32_t magicNumber)
 {
+    textColor = FG_WHITE | BG_BLACK;
+    textCursor = 0;
+    
     ClearScreen(' ');
     ResetCursor();
 
