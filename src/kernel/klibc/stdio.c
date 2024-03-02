@@ -59,6 +59,13 @@ void outc(char c)
 
 		break;
 
+	case '\b':
+		textCursor--;
+		outc(' ');
+		textCursor--;
+
+		break;
+
 	case '\t':
 	{
 		// for(uint8_t i = 0; i < TAB_LENGTH; i++)
