@@ -1,9 +1,9 @@
 CC = i386-elf-gcc
-CFLAGS = -std=gnu99 -ffreestanding -Wall -masm=intel -m32 -lgcc # -O3
+CFLAGS = -std=gnu99 -nostdlib -lgcc -ffreestanding -Wall -masm=intel -m32 -O3
 
 all: horizonos.iso
 
-horizonos.iso: src/kernel/kernelentry.asm Makefile clean
+horizonos.iso: src/kernel/kernelentry.asm Makefile rmBin build-libc
 	echo "Building HorizonOS..."
 	echo "  Building asm files..."
 	nasm -f elf -o "bin/kernelentry.o" "src/kernel/kernelentry.asm"
@@ -19,6 +19,13 @@ horizonos.iso: src/kernel/kernelentry.asm Makefile clean
 	cp bin/kernel.bin iso/boot/kernel.bin
 	cp grub.cfg iso/boot/grub/grub.cfg
 	grub-mkrescue -o horizonos.iso iso
+
+build-libc:
+
+
+rmBin:
+	rm -rf bin/*
+	rm -rf iso
 
 clean:
 	rm -rf bin/*

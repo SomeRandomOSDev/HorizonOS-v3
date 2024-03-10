@@ -70,7 +70,11 @@ uint16_t PCI_ScanBuses()
                 if(deviceId != 0xffff && vendorId != 0xffff)
                 {
                     deviceCount++;
-                    printf("%x:%x.%x | %x: %x:%x %x:%x\n", i, j, k, pciClass, vendorId, deviceId, subVendorId, subDeviceId);
+                    char* classStr = PCI_class_str[pciClass >> 8];
+                    if(!classStr)
+                        classStr = "Reserved";
+                    printf("%x:%x.%x | %x: %x:%x %x:%x | %s\n", 
+                    i, j, k, pciClass, vendorId, deviceId, subVendorId, subDeviceId, classStr);
                 }
             }
 		}

@@ -17,6 +17,9 @@ multiboot_info_t* multibootInfo;
 #include "klibc/string.h"
 #include "klibc/stdlib.h"
 
+#include "IO/textio.h"
+#include "util/kmalloc.h"
+
 #include "IO/parallel.h"
 #include "IO/ps2kb.h"
 #include "IO/ps2.h"
@@ -34,6 +37,7 @@ multiboot_info_t* multibootInfo;
 #include "klibc/stdio.c"
 #include "klibc/string.c"
 #include "klibc/stdlib.c"
+#include "IO/textio.c"
 
 #include "IO/parallel.c"
 #include "IO/ps2kb.c"

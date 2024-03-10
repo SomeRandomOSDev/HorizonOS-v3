@@ -17,6 +17,7 @@
     - ✅ Handle PS/2 keyboard
     - ⬜ Handle PS/2 mouse
     - ✅ Handle spurious IRQs
+- ⬜ Create a C library
 - ⬜ Add PCI bus scanning
 - ⬜ Add PRNGs
 - ⬜ Implement paging

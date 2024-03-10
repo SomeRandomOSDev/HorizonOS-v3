@@ -1,94 +1,111 @@
 #pragma once
 
-void ShowCursor(uint8_t scanlineStart, uint8_t scanlineEnd)
-{
-	outb(0x3d4, 0x0a);
-	outb(0x3d5, (inb(0x3d5) & 0xc0) | scanlineStart);
+// void ShowCursor(uint8_t scanlineStart, uint8_t scanlineEnd)
+// {
+// 	outb(0x3d4, 0x0a);
+// 	outb(0x3d5, (inb(0x3d5) & 0xc0) | scanlineStart);
  
-	outb(0x3d4, 0x0b);
-	outb(0x3d5, (inb(0x3d5) & 0xe0) | scanlineEnd);
-}
+// 	outb(0x3d4, 0x0b);
+// 	outb(0x3d5, (inb(0x3d5) & 0xe0) | scanlineEnd);
+// }
 
-void HideCursor()
-{
-	outb(0x3d4, 0x0a);
-	outb(0x3d5, 0x20);
-}
+// void HideCursor()
+// {
+// 	outb(0x3d4, 0x0a);
+// 	outb(0x3d5, 0x20);
+// }
 
-void ResetCursor()
-{
-	ShowCursor(14, 15);
-}
+// void ResetCursor()
+// {
+// 	ShowCursor(14, 15);
+// }
 
-void SetCursorPos(uint16_t pos)
-{
-	outb(0x3d4, 0x0f);
-	outb(0x3d5, (pos & 0xff));
-	outb(0x3d4, 0x0e);
-	outb(0x3d5, ((pos >> 8) & 0xff));
-}
+// void SetCursorPos(uint16_t pos)
+// {
+// 	outb(0x3d4, 0x0f);
+// 	outb(0x3d5, (pos & 0xff));
+// 	outb(0x3d4, 0x0e);
+// 	outb(0x3d5, ((pos >> 8) & 0xff));
+// }
 
-void UpdateCursor()
-{
-	textCursor %= 80 * 25;
-	SetCursorPos(textCursor);
-}
+// void UpdateCursor()
+// {
+// 	// textCursor %= 80 * 25;
+// 	SetCursorPos(textCursor);
+// }
 
-void ClearScreen(char c)
-{
-	for(uint16_t i = 0; i < 80 * 25; i++)
-	{
-		*((uint8_t*)0xb8000 + i * 2) = c;
-		*((uint8_t*)0xb8001 + i * 2) = textColor;
-	}
+// void ClearScreen(char c)
+// {
+// 	for(uint16_t i = 0; i < 80 * 25; i++)
+// 	{
+// 		VRAM_buffer[i]._char = c;
+// 		VRAM_buffer[i].color = textColor;
 
-	textCursor = 0;
-	UpdateCursor();
-}
+// 		VRAM[i] = VRAM_buffer[i];
+// 	}
 
-void outc(char c)
-{
-	switch(c)
-	{
-	case '\n':
-		textCursor += 80;
+// 	// memcpy((void*)VRAM, (void*)VRAM_buffer, 80 * 25 * 2);
 
-	case '\r':
-		textCursor /= 80;
-		textCursor *= 80;
+// 	// textCursor = 0;
+// 	// UpdateCursor();
+// }
 
-		break;
+// void outc(char c)
+// {
+// 	switch(c)
+// 	{
+// 	case '\n':
+// 		textCursor += 80;
 
-	case '\b':
-		textCursor--;
-		outc(' ');
-		textCursor--;
+// 	case '\r':
+// 		textCursor /= 80;
+// 		textCursor *= 80;
 
-		break;
+// 		break;
 
-	case '\t':
-	{
-		// for(uint8_t i = 0; i < TAB_LENGTH; i++)
-		uint8_t firstTabX = (textCursor % 80) / TAB_LENGTH;
-		while(firstTabX == (textCursor % 80) / TAB_LENGTH)
-			outc(' ');
+// 	case '\b':
+// 		textCursor--;
+// 		outc(' ');
+// 		textCursor--;
 
-		break;
-	}
+// 		break;
 
-	default:
-		*((uint8_t*)0xb8000 + 2 * textCursor) = c;
-		*((uint8_t*)0xb8001 + 2 * textCursor) = textColor;
+// 	case '\t':
+// 	{
+// 		// for(uint8_t i = 0; i < TAB_LENGTH; i++)
+// 		uint8_t firstTabX = (textCursor % 80) / TAB_LENGTH;
+// 		while(firstTabX == (textCursor % 80) / TAB_LENGTH)
+// 			outc(' ');
 
-		textCursor++;
-	}
+// 		break;
+// 	}
 
-	if((textCursor / 80) == 25)	// Last line
-	{
-		textCursor -= 80;
-		memcpy((void*)0xb8000, (void*)0xb8000 + 80 * 2, 80 * 25 * 2);
-	}
-}
+// 	default:
+// 		// VRAM_buffer[textCursor]._char = c;
+// 		// VRAM_buffer[textCursor].color = textColor;
+
+// 		// VRAM[textCursor] = VRAM_buffer[textCursor];
+
+// 		VRAM[textCursor]._char = c;
+// 		VRAM[textCursor].color = textColor;
+
+// 		textCursor++;
+// 	}
+
+// 	// while((textCursor / 80) >= 25)	// Last line
+// 	// {
+// 	// 	for(uint16_t i = 0; i < 80 * 24; i++)
+// 	// 		VRAM_buffer[i] = VRAM_buffer[i + 80];
+// 	// 	for(uint8_t i = 0; i < 80; i++)
+// 	// 	{
+// 	// 		VRAM_buffer[i + 24 * 80]._char = ' ';
+// 	// 		VRAM_buffer[i + 24 * 80].color = FG_WHITE | BG_BLACK;
+// 	// 	}
+// 	// 	for(uint16_t i = 0; i < 80 * 25; i++)
+// 	// 		VRAM[i] = VRAM_buffer[i];
+// 	// 	textCursor -= 80;
+// 	// }
+// }
 
 void putc(char c)
 {
