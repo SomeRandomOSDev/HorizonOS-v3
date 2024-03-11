@@ -3,12 +3,13 @@ CFLAGS = -std=gnu99 -nostdlib -lgcc -ffreestanding -Wall -masm=intel -m32 -O3
 
 all: horizonos.iso
 
-horizonos.iso: src/kernel/kernelentry.asm Makefile rmBin build-libc
+horizonos.iso: src/kernel/kernelentry.asm Makefile rmBin
 	echo "Building HorizonOS..."
 	echo "  Building asm files..."
 	nasm -f elf -o "bin/kernelentry.o" "src/kernel/kernelentry.asm"
 	nasm -f elf -o "bin/gdt.o" "src/kernel/GDT/gdt.asm"
 	nasm -f elf -o "bin/idt.o" "src/kernel/IDT/idt.asm"
+	nasm -f elf -o "bin/syscalls.o" "src/kernel/IDT/syscalls.asm"
 	echo "  Building C files..."
 	echo
 	$(CC) -c "src/kernel/kmain.c" -o "bin/kmain.o" $(CFLAGS)
@@ -20,8 +21,8 @@ horizonos.iso: src/kernel/kernelentry.asm Makefile rmBin build-libc
 	cp grub.cfg iso/boot/grub/grub.cfg
 	grub-mkrescue -o horizonos.iso iso
 
-build-libc:
-
+libc:
+	$(CC) -c "src/libc/functions/stdio/printf.h" -o "src/libc/lib/printf.o" $(CFLAGS)
 
 rmBin:
 	rm -rf bin/*

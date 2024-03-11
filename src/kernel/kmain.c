@@ -30,6 +30,7 @@ multiboot_info_t* multibootInfo;
 #include "IDT/PIC.h"
 #include "IDT/int.h"
 #include "IDT/idt.h"
+#include "IDT/syscalls.h"
 
 //-----------------------------------------------------------------
 

@@ -33,16 +33,16 @@ void kernelPanic(uint8_t intNb, uint8_t errorCode)
     halt();
 }
 
-void InterruptHandler(uint8_t interruptNumber, uint8_t errorCode)
+void InterruptHandler(struct IntParams params)
 {
-    if(interruptNumber < 32)            // ISR
+    if(params.interruptNumber < 32)            // ISR
     {
-        kernelPanic(interruptNumber, errorCode);
+        kernelPanic(params.interruptNumber, params.errorCode);
         return;
     }
-    else if(interruptNumber < 32 + 16)  // IRQ
+    else if(params.interruptNumber < 32 + 16)  // IRQ
     {
-        uint8_t irqNumber = interruptNumber - 32;
+        uint8_t irqNumber = params.interruptNumber - 32;
 
         if(irqNumber == 7 && !(PIC_GetISR() >> 7))
             return;
@@ -70,5 +70,14 @@ void InterruptHandler(uint8_t interruptNumber, uint8_t errorCode)
         PIC_SendEOI(irqNumber);
 
         return;
+    }
+    else if(params.interruptNumber == 0x80)    // syscall
+    {
+        switch(params.eax)
+        {
+        case 0:
+            putc((char)params.ebx);
+            break;
+        }
     }
 }

@@ -9,9 +9,8 @@ LoadIDT:
 INT_%1:
     cli
     push %1
-    call InterruptHandler
-    add esp, 8
-    iret 
+
+    jmp _InterruptHandler
 %endmacro
 
 %macro INT_NO_ERROR_CODE 1
@@ -19,13 +18,13 @@ INT_%1:
     cli
     push 0     ; dummy error code
     push %1
-    call InterruptHandler
-    add esp, 8
-    iret
+
+    jmp _InterruptHandler
 %endmacro
 
 extern InterruptHandler
 
+; ISRs
 INT_NO_ERROR_CODE 0
 INT_NO_ERROR_CODE 1
 INT_NO_ERROR_CODE 2
@@ -59,27 +58,35 @@ INT_NO_ERROR_CODE 29
 INT_ERROR_CODE    30
 INT_NO_ERROR_CODE 31
 
-INT_NO_ERROR_CODE 32
-INT_NO_ERROR_CODE 33
-INT_NO_ERROR_CODE 34
-INT_NO_ERROR_CODE 35
-INT_NO_ERROR_CODE 36
-INT_NO_ERROR_CODE 37
-INT_NO_ERROR_CODE 38
-INT_NO_ERROR_CODE 39
-INT_NO_ERROR_CODE 40
-INT_NO_ERROR_CODE 41
-INT_NO_ERROR_CODE 42
-INT_NO_ERROR_CODE 43
-INT_NO_ERROR_CODE 44
-INT_NO_ERROR_CODE 45
-INT_NO_ERROR_CODE 46
-INT_NO_ERROR_CODE 47
+; IRQs
+%assign i 32
+    %rep    16
+        INT_NO_ERROR_CODE i
+    %assign i i+1 
+    %endrep
+
+; All the other interrupts
+%assign i 48
+    %rep    (256 - 48)
+        INT_NO_ERROR_CODE i
+    %assign i i+1 
+    %endrep
 
 global INTTable
 INTTable:
     %assign i 0 
-    %rep    48 
+    %rep    256
         dd INT_%+i
     %assign i i+1 
     %endrep
+
+intEnd:
+    add esp, 8
+    iret 
+
+_InterruptHandler:
+    push eax
+    push ebx
+    call InterruptHandler
+    add esp, 8
+    jmp intEnd

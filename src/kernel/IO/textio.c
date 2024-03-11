@@ -54,8 +54,7 @@ void outc(char c)
 		textCursor += 80;
 
 	case '\r':
-		textCursor /= 80;
-		textCursor *= 80;
+		textCursor = (int)(textCursor / 80) * 80;
 
 		break;
 

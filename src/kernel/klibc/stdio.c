@@ -290,7 +290,6 @@ void printf(char* fmt, ...)
 
 char* gets(char* str)
 {
-	while(PS2_KB_GetKeyState('\n'));
 	uint16_t cursor_start_pos = textCursor;
     uint8_t size = 0;
     while(!PS2_KB_GetKeyState('\n'))
@@ -318,6 +317,8 @@ char* gets(char* str)
     str[size] = '\0';
 
     putc('\n');
+
+	while(PS2_KB_GetKeyState('\n'));
 
     return str;
 }

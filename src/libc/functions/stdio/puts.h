@@ -1,6 +1,6 @@
 #pragma once
 
-void puts(char* str)
+int puts(char* str)
 {
 	while(*str)
 	{
@@ -10,4 +10,6 @@ void puts(char* str)
 	}
 
 	UpdateCursor();
+
+	return (int)str;
 }

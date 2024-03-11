@@ -1,5 +1,10 @@
 #pragma once
 
+struct IntParams
+{
+    uint32_t ebx, eax, interruptNumber, errorCode;
+};
+
 char* errorString[32] = 
 {
     "DIVISION_ERROR",
@@ -37,4 +42,4 @@ char* errorString[32] =
 };
 
 void kernelPanic(uint8_t intNb, uint8_t errorCode);
-void InterruptHandler(uint8_t interruptNumber, uint8_t errorCode);
+void InterruptHandler(struct IntParams params);
