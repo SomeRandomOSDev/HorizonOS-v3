@@ -4,24 +4,28 @@ CFLAGS = -std=gnu99 -nostdlib -lgcc -ffreestanding -Wall -masm=intel -m32 -O3
 all: horizonos.iso
 
 horizonos.iso: src/kernel/kernelentry.asm Makefile rmBin libc
-	echo "Building HorizonOS..."
-	echo "  Building asm files..."
 	nasm -f elf -o "bin/kernelentry.o" "src/kernel/kernelentry.asm"
 	nasm -f elf -o "bin/gdt.o" "src/kernel/GDT/gdt.asm"
 	nasm -f elf -o "bin/idt.o" "src/kernel/IDT/idt.asm"
 	nasm -f elf -o "bin/syscalls.o" "src/kernel/IDT/syscalls.asm"
-	echo "  Building C files..."
-	echo
+
 	$(CC) -c "src/kernel/kmain.c" -o "bin/kmain.o" $(CFLAGS)
-	ld -m elf_i386 -T link.ld -o "bin/kernel.bin"
-	echo "Installing GRUB..."
-	echo
-	mkdir -p iso/boot/grub
-	cp bin/kernel.bin iso/boot/kernel.bin
-	cp grub.cfg iso/boot/grub/grub.cfg
-	grub-mkrescue -o horizonos.iso iso
+
+	ld -m elf_i386 -T src/link.ld -o "bin/kernel.bin"
+
+	mkdir -p root/boot/grub
+
+	cp bin/kernel.bin root/boot/kernel.bin
+	cp src/grub.cfg root/boot/grub/grub.cfg
+
+	grub-mkrescue -o horizonos.iso root
+
+	tar cvf bin/initrd.tar initrd
+	cat "bin/kernel.bin" "bin/initrd.tar" > "bin/kernel.bin"
 
 libc:
+	echo "Building libc..."
+	
 	nasm -f elf -o "src/libc/lib/crt0.o" "src/libc/functions/crt0.asm"
 	nasm -f elf -o "src/libc/lib/crti.o" "src/libc/functions/crti.asm"
 	nasm -f elf -o "src/libc/lib/crtn.o" "src/libc/functions/crtn.asm"
@@ -30,7 +34,7 @@ libc:
 
 rmBin:
 	rm -rf bin/*
-	rm -rf iso
+	rm -rf root
 	rm -rf src/libc/lib/*
 
 clean: rmBin

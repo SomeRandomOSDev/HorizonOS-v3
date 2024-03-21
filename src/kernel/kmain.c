@@ -50,6 +50,8 @@ multiboot_info_t* multibootInfo;
 #include "IDT/int.c"
 #include "IDT/idt.c"
 
+#include "files/tar/tar.h"
+
 #define KB 1024
 #define MB (1024 * KB)
 #define GB (1024 * MB)
@@ -187,10 +189,5 @@ void kmain(multiboot_info_t* _multibootInfo, uint32_t magicNumber)
 
     putc('\n');
 
-    char buf[40] = { 0 };
-
-    while(true) 
-    {
-        gets(&buf[0]);
-    }
+    while(true);
 }
