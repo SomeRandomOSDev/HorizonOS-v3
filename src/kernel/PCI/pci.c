@@ -58,6 +58,7 @@ void PCI_CheckDevice(
 
 void PCI_ScanBus(uint8_t bus)
 {    
+    bool anyDevices = false;
     for(uint8_t j = 0; j < 32; j++)     // 32 devices per bus
     {
         bool multipleFuncDevice;
@@ -70,6 +71,11 @@ void PCI_ScanBus(uint8_t bus)
             multipleFuncDevice = commonHeader.headerType >> 7;
             if(commonHeader.deviceID != 0xffff && commonHeader.vendorID != 0xffff)
             {
+                if(!anyDevices)
+                {
+                    printf("Bus %u:\n", bus);
+                    anyDevices = true;
+                }
                 char* classStr = PCI_class_str[commonHeader.classCode];
                 if(!classStr)
                     classStr = "Reserved";
@@ -85,7 +91,7 @@ void PCI_ScanBus(uint8_t bus)
 
 void PCI_ScanBuses()
 {
-    printf("Device.Func Header | Class SubClass VendID:DevID SubSysVendID:SubSysDevID\n");
+    // printf("Device.Func Header | Class SubClass VendID:DevID SubSysVendID:SubSysDevID\n");
     
     struct PCI_Common commonHeader;
     PCI_CheckDevice(0, 0, 0, &commonHeader, NULL, NULL);

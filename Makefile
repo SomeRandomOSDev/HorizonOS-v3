@@ -4,6 +4,8 @@ CFLAGS = -std=gnu99 -nostdlib -lgcc -ffreestanding -Wall -masm=intel -m32 -O3
 all: horizonos.iso
 
 horizonos.iso: src/kernel/kernelentry.asm Makefile rmBin libc
+	tar cvf initrd.tar initrd
+
 	nasm -f elf -o "bin/kernelentry.o" "src/kernel/kernelentry.asm"
 	nasm -f elf -o "bin/gdt.o" "src/kernel/GDT/gdt.asm"
 	nasm -f elf -o "bin/idt.o" "src/kernel/IDT/idt.asm"
@@ -19,9 +21,6 @@ horizonos.iso: src/kernel/kernelentry.asm Makefile rmBin libc
 	cp src/grub.cfg root/boot/grub/grub.cfg
 
 	grub-mkrescue -o horizonos.iso root
-
-	tar cvf bin/initrd.tar initrd
-	cat "bin/kernel.bin" "bin/initrd.tar" > "bin/kernel.bin"
 
 libc:
 	echo "Building libc..."

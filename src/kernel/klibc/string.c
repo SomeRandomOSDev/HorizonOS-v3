@@ -14,7 +14,18 @@ void* memchr(const void* str, int c, size_t n)
     return out;
 }
 
-// int memcmp(const void* str1, const void* str2, size_t n);
+int memcmp(const void* str1, const void* str2, size_t n)
+{
+    for(uint64_t i = 0; i < n; i++)
+    {
+        if(((uint8_t*)str1)[i] < ((uint8_t*)str2)[i])
+            return -1;
+        if(((uint8_t*)str1)[i] > ((uint8_t*)str2)[i])
+            return 1;
+    }
+
+    return 0; 
+}
 
 void* memcpy(void* dest, const void* src, size_t n)
 {

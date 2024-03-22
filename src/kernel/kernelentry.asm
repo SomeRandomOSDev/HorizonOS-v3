@@ -5,17 +5,15 @@ MAGIC equ 0x1BADB002
 CHECKSUM equ -(MAGIC + FLAGS)
 
 section .multiboot
-align 4
 dd MAGIC
 dd FLAGS
 dd CHECKSUM
 
 section .text
-
-[extern kmain]
+extern kmain
 global _start
 _start:
-[bits 32]
+bits 32
 	mov ebp, stack_top
 	mov esp, stack_top
 
@@ -35,6 +33,9 @@ halt:
 	jmp $
 
 section .data
-align 1
 times 16384 dd 0
 stack_top:
+
+section .rodata
+global _initrd
+_initrd: incbin "initrd.tar"

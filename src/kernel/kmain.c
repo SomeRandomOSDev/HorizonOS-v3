@@ -4,6 +4,22 @@
 
 uint32_t totalMem = 0, availableMem = 0;
 
+#define KB 1024
+#define MB (1024 * KB)
+#define GB (1024 * MB)
+#define TB (1024 * GB)
+
+char byteMagnitude[5][3] = 
+{
+    {"B"}, {"KB"}, {"MB"}, {"GB"}, {"TB"}
+};
+
+extern uint8_t _kernelStart;
+extern uint8_t _kernelEnd;
+
+void* kernelStart;
+void* kernelEnd;
+
 #define EnableInterrupts()  asm("sti");
 #define DisableInterrupts() asm("cli");
 
@@ -51,22 +67,7 @@ multiboot_info_t* multibootInfo;
 #include "IDT/idt.c"
 
 #include "files/tar/tar.h"
-
-#define KB 1024
-#define MB (1024 * KB)
-#define GB (1024 * MB)
-#define TB (1024 * GB)
-
-char byteMagnitude[5][3] = 
-{
-    {"B"}, {"KB"}, {"MB"}, {"GB"}, {"TB"}
-};
-
-extern uint8_t _kernelStart;
-extern uint8_t _kernelEnd;
-
-void* kernelStart = &_kernelStart;
-void* kernelEnd = &_kernelEnd;
+#include "files/tar/initrd/initrd.h"
 
 void kmain(multiboot_info_t* _multibootInfo, uint32_t magicNumber)
 {
@@ -77,6 +78,9 @@ void kmain(multiboot_info_t* _multibootInfo, uint32_t magicNumber)
     ResetCursor();
 
     multibootInfo = _multibootInfo;
+
+    kernelStart = &_kernelStart;
+    kernelEnd = &_kernelEnd;
 
     if(magicNumber != MULTIBOOT_BOOTLOADER_MAGIC) 
     {
@@ -177,17 +181,15 @@ void kmain(multiboot_info_t* _multibootInfo, uint32_t magicNumber)
 
     putc('\n');
 
-    printf("LPT1: 0x%x\n", LPT1);
-    printf("LPT2: 0x%x\n", LPT2);
-    printf("LPT3: 0x%x\n", LPT3);
-
-    putc('\n');
-
     printf("Scanning PCI buses...\n");
     PCI_ScanBuses();
     printf("...Done\n");
 
     putc('\n');
+
+    printf("Initializing the initrd...");
+    initrd_Init();
+    printf(" | Done\n\n");
 
     while(true);
 }
