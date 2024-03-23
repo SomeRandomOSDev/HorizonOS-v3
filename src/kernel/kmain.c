@@ -194,13 +194,13 @@ void kmain(multiboot_info_t* _multibootInfo, uint32_t magicNumber)
 
     initrd_ListFiles();
 
-    EnableInterrupts();
+    putc('\n');
 
-    // sleep(1000);
-    // reboot();
+    EnableInterrupts();
 
     while(true)
     {
+        printf("user: ~$ ");
         char buffer[80];
         gets(&buffer[0]);
     }

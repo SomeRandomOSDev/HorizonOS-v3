@@ -35,6 +35,7 @@ rmBin:
 	rm -rf bin/*
 	rm -rf root
 	rm -rf src/libc/lib/*
+	rm -rf initrd.tar
 
 clean: rmBin
 	rm -f horizonos.iso
