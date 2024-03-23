@@ -85,8 +85,7 @@ intEnd:
     iret 
 
 _InterruptHandler:
-    push eax
-    push ebx
+    pushad
     call InterruptHandler
-    add esp, 8
+    popad
     jmp intEnd

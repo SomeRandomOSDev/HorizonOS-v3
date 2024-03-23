@@ -29,7 +29,7 @@ SECTIONS
 	{
 		*(.data)
 	}
-	
+
 	.bss BLOCK(4K) : ALIGN(4K)
 	{
 		*(COMMON)

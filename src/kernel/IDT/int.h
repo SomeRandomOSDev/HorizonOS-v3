@@ -2,7 +2,10 @@
 
 struct IntParams
 {
-    uint32_t ebx, eax, interruptNumber, errorCode;
+    uint32_t edi, esi, ebp;
+    uint32_t esp;   // ESP before pushing the other GP registers
+    uint32_t ebx, edx, ecx, eax;
+    uint32_t interruptNumber, errorCode;
 };
 
 char* errorString[32] = 

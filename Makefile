@@ -1,5 +1,5 @@
 CC = i386-elf-gcc
-CFLAGS = -std=gnu99 -nostdlib -lgcc -ffreestanding -Wall -masm=intel -m32 -O3
+CFLAGS = -std=gnu99 -nostdlib -lgcc -ffreestanding -Wall -masm=intel -m32 # -O3
 
 all: horizonos.iso
 

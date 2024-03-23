@@ -34,7 +34,6 @@ multiboot_info_t* multibootInfo;
 #include "klibc/stdlib.h"
 
 #include "IO/textio.h"
-#include "util/kmalloc.h"
 
 #include "IO/parallel.h"
 #include "IO/ps2kb.h"
@@ -66,8 +65,12 @@ multiboot_info_t* multibootInfo;
 #include "IDT/int.c"
 #include "IDT/idt.c"
 
+//-------------------------------------------------------
+
 #include "files/tar/tar.h"
 #include "files/tar/initrd/initrd.h"
+#include "util/reboot.h"
+#include "util/kmalloc.h"
 
 void kmain(multiboot_info_t* _multibootInfo, uint32_t magicNumber)
 {
@@ -193,8 +196,12 @@ void kmain(multiboot_info_t* _multibootInfo, uint32_t magicNumber)
 
     EnableInterrupts();
 
-    // struct initrd_file f = inird_GetFile("initrd/test.txt");
-    // printf("%s\n", f.address);
+    // sleep(1000);
+    // reboot();
 
-    while(true);
+    while(true)
+    {
+        char buffer[80];
+        gets(&buffer[0]);
+    }
 }

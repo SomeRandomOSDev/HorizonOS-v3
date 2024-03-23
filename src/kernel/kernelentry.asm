@@ -29,8 +29,9 @@ bits 32
 global halt
 halt:
 	cli
+.loop:
   	hlt
-	jmp $
+	jmp .loop
 
 section .data
 times 16384 dd 0
