@@ -292,11 +292,13 @@ char* gets(char* str)
 {
 	uint16_t cursor_start_pos = textCursor;
     uint8_t size = 0;
-    while(!PS2_KB_GetKeyState('\n'))
+    while(true)
     {
         if(kb_text_key_down)
         {
             uint16_t key = PS2_KB_GetTextKey();
+			if(key == '\n')
+				break;
             if(!(key == '\b' && cursor_start_pos == textCursor))
             {
                 if(key != '\b' && key != '\n' && key != KB_DELETE)

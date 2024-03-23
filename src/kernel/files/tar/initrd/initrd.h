@@ -8,26 +8,56 @@ uint8_t initrd_file_count;
 
 struct initrd_file
 {
-    void* address;
+    void* address;  // Header + 512
     uint64_t size;
+    enum TAR_TypeFlags type;
 };
+
+struct initrd_file initrd[256];
 
 void initrd_Init()
 {
     initrd_begin = &_initrd;
-    // initrd_end = initrd_begin;
     initrd_file_count = 0;
     uint32_t address = (uint32_t)initrd_begin;
     memset(&TAR_emptyHeader, 0, 512);
     while(memcmp(&TAR_emptyHeader, (void*)address, 512))
-    // while(!memcmp(((struct TAR_Header*)address)->USTAR, "ustar", 5))
     {
         struct TAR_Header* file = (struct TAR_Header*)address;
-        address += 512 + 512 * ceil(TAR_OctalStringToInt(file->size) / 512.f);
+
+        initrd[initrd_file_count].address = ((void*)address) + 512;
+        initrd[initrd_file_count].size = TAR_OctalStringToInt(file->size);
+        initrd[initrd_file_count].type = file->typeflag;
+
+        address += 512 + 512 * ceil(initrd[initrd_file_count].size / 512.f);
         initrd_file_count++;
+    }
+    initrd_end = (void*)address;
+}
+
+void initrd_ListFiles()
+{
+    for(uint8_t i = 0; i < initrd_file_count; i++)
+    {
+        struct initrd_file file = initrd[i];
+        struct TAR_Header* header = (struct TAR_Header*)(file.address - 512);
+        printf("%s %s %uB\n", header->filename, TAR_GetTypeFlagString(header), file.size);
     }
 }
 
-void inird_GetFile(struct initrd_file* file_info)
+struct initrd_file inird_GetFile(char* filename)
 {
+    for(uint8_t i = 0; i < initrd_file_count; i++)
+    {
+        struct initrd_file file = initrd[i];
+        struct TAR_Header* header = (struct TAR_Header*)(file.address - 512);
+        if(!strcmp(filename, header->filename))
+            return file;
+    }
+
+    struct initrd_file file;
+    file.address = NULL;
+    file.size = 0;
+
+    return file;
 }

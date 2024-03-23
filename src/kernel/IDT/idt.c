@@ -25,7 +25,7 @@ void InstallIDT()
     _idtr.size = sizeof(IDT) - 1;
     _idtr.address = (uint32_t)&IDT;
 
-    LoadIDT();
-
     PIC_Disable();
+
+    LoadIDT();
 }

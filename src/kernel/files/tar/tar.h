@@ -2,7 +2,7 @@
 
 struct TAR_Header
 {
-    uint8_t filename[100];
+    /*uint8_t*/char filename[100];
     uint8_t mode[8];
     uint8_t oid[8];     // Owner user ID
     uint8_t gid[8];     // Group user ID
@@ -21,6 +21,17 @@ struct TAR_Header
     // uint8_t padding[12];
 };
 
+enum TAR_TypeFlags
+{
+    NormalFile      = '0',
+    HardLink        = '1',
+    SymbolicLink    = '2',
+    CharacterDevice = '3',
+    BlockDevice     = '4',
+    Directory       = '5',
+    NamedPipe       = '6'
+};
+
 uint8_t TAR_emptyHeader[512];
 
 uint64_t TAR_OctalStringToInt(uint8_t str[12])
@@ -35,4 +46,20 @@ uint64_t TAR_OctalStringToInt(uint8_t str[12])
     }
  
     return val;
+}
+
+char* typeflagStr[7] =
+{
+    "Normal file",
+    "Hard link",
+    "Symbolic link",
+    "Character device",
+    "Block device",
+    "Directory",
+    "Named pipe"
+};
+
+char* TAR_GetTypeFlagString(struct TAR_Header* header)
+{
+    return typeflagStr[header->typeflag - '0'];
 }

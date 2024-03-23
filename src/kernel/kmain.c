@@ -169,8 +169,6 @@ void kmain(multiboot_info_t* _multibootInfo, uint32_t magicNumber)
     PS2_KB_SetScancodeSet(2);
     printf(" | Done\n");
 
-    EnableInterrupts();
-
     printf("Initializing memory allocation...");
     initMemAlloc(256);
     printf(" | Done\n");
@@ -190,6 +188,13 @@ void kmain(multiboot_info_t* _multibootInfo, uint32_t magicNumber)
     printf("Initializing the initrd...");
     initrd_Init();
     printf(" | Done\n\n");
+
+    initrd_ListFiles();
+
+    EnableInterrupts();
+
+    // struct initrd_file f = inird_GetFile("initrd/test.txt");
+    // printf("%s\n", f.address);
 
     while(true);
 }
