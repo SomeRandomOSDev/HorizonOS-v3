@@ -1,5 +1,5 @@
 # HorizonOS-v3
- A simple hobby 32-bit operating system written in C and intel ASM for x86
+ A (very) simple x86 hobby operating system written in C and ASM (Intel Syntax)
  
 ## TODO
 - ✅ Implement basic text output
@@ -18,14 +18,8 @@
     - ⬜ Handle PS/2 mouse
     - ✅ Handle spurious IRQs
 - ⬜ Create a C library
-- ⬜ Add PCI bus scanning
+- ✅ Add PCI bus scanning
 - ⬜ Add PRNGs
-- ⬜ Implement paging
-- ⬜ Implement multitasking
-- ⬜ Use the VESA video modes
-- ⬜ Implement a parrallel port driver
-- ⬜ Implement a serial port driver
 - ⬜ Implement a basic ATA driver
 - ⬜ Implement the FAT file system
-- ⬜ Implement symmetric multiprocessing
 - ⬜ Add a USB driver
