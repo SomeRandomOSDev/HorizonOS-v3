@@ -4,7 +4,7 @@ CFLAGS = -std=gnu99 -nostdlib -lgcc -ffreestanding -Wall -masm=intel -m32 # -O3
 all: horizonos.iso
 
 horizonos.iso: src/kernel/kernelentry.asm Makefile rmBin libc
-	tar cvf initrd.tar initrd
+	tar -cvf initrd.tar initrd 
 
 	nasm -f elf -o "bin/kernelentry.o" "src/kernel/kernelentry.asm"
 	nasm -f elf -o "bin/gdt.o" "src/kernel/GDT/gdt.asm"

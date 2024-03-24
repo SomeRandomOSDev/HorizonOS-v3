@@ -82,14 +82,15 @@ void outc(char c)
 		textCursor++;
 	}
 
-	while((textCursor / 80) >= 24)	// Last line
+	while((textCursor / 80) >= 25)	// Last line
 	{
-		memcpy(&VRAM[0], &VRAM[80], 80 * 24 * sizeof(struct Character));
-		// for(uint8_t i = 0; i < 80; i++)
-		// {
-		// 	VRAM[24 * 80 + i]._char = ' ';
-		// 	VRAM[24 * 80 + i].color = FG_WHITE | BG_BLACK;
-		// }
+		memcpy(&VRAM[0], &VRAM[80], 80 * 25 * sizeof(struct Character));
+		
+		for(uint8_t i = 0; i < 80; i++)
+		{
+			VRAM[24 * 80 + i]._char = ' ';
+			VRAM[24 * 80 + i].color = FG_WHITE | BG_BLACK;
+		}
 
 		textCursor -= 80;
 	}
