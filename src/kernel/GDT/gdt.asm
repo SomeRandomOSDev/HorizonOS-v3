@@ -1,3 +1,6 @@
+bits 32
+section .text
+
 global LoadGDT
 extern _gdtr
 ; void LoadGDT()

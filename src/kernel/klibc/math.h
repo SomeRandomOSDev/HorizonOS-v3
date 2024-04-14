@@ -1,6 +1,6 @@
 #pragma once
 
-double floor(double x);
-double ceil(double x);
-double fabs(double x);
-double fmod(double x, double y);
+double kfloor(double x);
+double kceil(double x);
+double kfabs(double x);
+double kfmod(double x, double y);

@@ -7,6 +7,8 @@ INPUT
 	"bin/gdt.o"
 	"bin/idt.o"
 	"bin/syscalls.o"
+	"bin/paging.o"
+	"bin/stdio.o"
 )
  
 SECTIONS

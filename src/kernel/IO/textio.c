@@ -76,15 +76,20 @@ void outc(char c)
 	}
 
 	default:
-		VRAM[textCursor]._char = c;
-		VRAM[textCursor].color = textColor;
+		if(currentStream->stream == STDOUT)
+		{
+			VRAM[textCursor]._char = c;
+			VRAM[textCursor].color = textColor;
 
-		textCursor++;
+			textCursor++;
+		}
+		if(currentStream->stream == LOG_STREAM)
+			Debug_putc(c);
 	}
 
 	while((textCursor / 80) >= 25)	// Last line
 	{
-		memcpy(&VRAM[0], &VRAM[80], 80 * 25 * sizeof(struct Character));
+		kmemcpy(&VRAM[0], &VRAM[80], 80 * 25 * sizeof(struct Character));
 		
 		for(uint8_t i = 0; i < 80; i++)
 		{

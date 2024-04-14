@@ -25,6 +25,7 @@ void* kernelEnd;
 
 #include "multiboot.h"
 #include "IO/io.h"
+#include "Debug/out.h"
 
 multiboot_info_t* multibootInfo;
 
@@ -71,14 +72,21 @@ multiboot_info_t* multibootInfo;
 #include "files/tar/initrd/initrd.h"
 #include "util/reboot.h"
 #include "util/kmalloc.h"
+#include "Paging/paging.h"
 
-void kmain(multiboot_info_t* _multibootInfo, uint32_t magicNumber)
+void kernel(multiboot_info_t* _multibootInfo, uint32_t magicNumber)
 {
     textColor = FG_WHITE | BG_BLACK;
     textCursor = 0;
+    _kstdin.stream = STDIN;
+    _kstdout.stream = STDOUT;
+    _kstderr.stream = STDERR;
+    _klog.stream = LOG_STREAM;
 
     ClearScreen(' ');
     ResetCursor();
+
+    kfprintf(klog, "Kernel loaded\n");
 
     multibootInfo = _multibootInfo;
 
@@ -88,18 +96,18 @@ void kmain(multiboot_info_t* _multibootInfo, uint32_t magicNumber)
     if(magicNumber != MULTIBOOT_BOOTLOADER_MAGIC) 
     {
         textColor = (FG_RED | BG_BLACK);
-        printf("Invalid multiboot magic number (%x).\n", magicNumber);
-        abort();
+        kprintf("Invalid multiboot magic number (%x).\n", magicNumber);
+        kabort();
     }
 
     if(!((multibootInfo->flags >> 6) & 1)) 
     {
         textColor = (FG_RED | BG_BLACK);
-        puts("Invalid memory map.\n");
-        abort();
+        kputs("Invalid memory map.\n");
+        kabort();
     }
 
-    puts("Memory map :\n");
+    kputs("Memory map :\n");
     for(uint32_t i = 0; i < multibootInfo->mmap_length; i += sizeof(multiboot_memory_map_t)) 
     {
         multiboot_memory_map_t* mmmt = (multiboot_memory_map_t*)(multibootInfo->mmap_addr + i);
@@ -109,7 +117,7 @@ void kmain(multiboot_info_t* _multibootInfo, uint32_t magicNumber)
  
         if(mmmt->type == MULTIBOOT_MEMORY_AVAILABLE) 
         {
-            printf("Block address: 0x%x | Length: %d\n", 
+            kprintf("Block address: 0x%x | Length: %d\n", 
             // (mmmt->addr_high << 8) | mmmt->addr_low, (mmmt->len_high) | mmmt->len_low);
             mmmt->addr_low, mmmt->len_low);
 
@@ -139,69 +147,85 @@ void kmain(multiboot_info_t* _multibootInfo, uint32_t magicNumber)
         availableMem_magnitude++;
     }
 
-    putc('\n');
-    printf("Total RAM: \t %d%s (%dB)\n", (uint32_t)totalMem_short, byteMagnitude[totalMem_magnitude % 5], totalMem);
-    printf("Usable: \t %d%s (%dB)\n", (uint32_t)availableMem_short, byteMagnitude[availableMem_magnitude % 5], availableMem);
-    printf("Kernel size: %d\n", kernelEnd - kernelStart);
+    kputc('\n');
+    kprintf("Total RAM: \t %d%s (%dB)\n", (uint32_t)totalMem_short, byteMagnitude[totalMem_magnitude % 5], totalMem);
+    kprintf("Usable: \t %d%s (%dB)\n", (uint32_t)availableMem_short, byteMagnitude[availableMem_magnitude % 5], availableMem);
+    kprintf("Kernel start: 0x%x\n", kernelStart);
+    kprintf("Kernel end:   0x%x\n", kernelEnd);
+    kprintf("Kernel size:  %d\n", kernelEnd - kernelStart);
 
-    putc('\n');
+    // while(true);
 
-    printf("Loading a GDT...");
-    memset(&GDT[0], 0, sizeof(struct GDT_Entry));   // NULL Descriptor
+    kputc('\n');
+
+    kprintf("Loading a GDT...");
+    kmemset(&GDT[0], 0, sizeof(struct GDT_Entry));   // NULL Descriptor
     SetupGDTEntry(&GDT[1], 0, 0xfffff, 0x9a, 0xc);  // Kernel mode code segment
     SetupGDTEntry(&GDT[2], 0, 0xfffff, 0x92, 0xc);  // Kernel mode data segment
     InstallGDT();
-    printf(" | Done\n");
+    kprintf(" | Done\n");
 
-    printf("Loading an IDT...");
+    kprintf("Loading an IDT...");
     InstallIDT();
-    printf(" | Done\n");
+    kprintf(" | Done\n");
 
-    printf("Initializing the PIC...");
+    kprintf("Initializing the PIC...");
     PIC_Remap(32, 32 + 8);
-    printf(" | Done\n");
+    kprintf(" | Done\n");
 
-    printf("Initializing the PIT...");
+    kprintf("Initializing the PIT...");
     PIT_Channel0_SetFrequency(1000);
-    printf(" | Done\n");
+    kprintf(" | Done\n");
 
-    printf("Initializing the keyboard...");
+    kprintf("Initializing the keyboard...");
     kb_layout = KB_AZERTY;
     PS2_KB_Init();
     PS2_KB_ResetKeyboard();
     PS2_KB_SetScancodeSet(2);
-    printf(" | Done\n");
+    kprintf(" | Done\n");
 
-    printf("Initializing memory allocation...");
+    kprintf("Initializing memory allocation...");
     initMemAlloc(256);
-    printf(" | Done\n");
+    kprintf(" | Done\n");
 
-    printf("Initializing parallel ports...");
+    kprintf("Initializing parallel ports...");
     InitParallel();
-    printf(" | Done\n");
+    kprintf(" | Done\n");
 
-    putc('\n');
+    kputc('\n');
 
-    printf("Scanning PCI buses...\n");
+    kprintf("Scanning PCI buses...\n");
     PCI_ScanBuses();
-    printf("...Done\n");
+    kprintf("...Done\n");
 
-    putc('\n');
+    kputc('\n');
 
-    printf("Initializing the initrd...");
+    kprintf("Initializing the initrd...");
     initrd_Init();
-    printf(" | Done\n\n");
+    kprintf(" | Done\n\n");
 
     initrd_ListFiles();
 
-    putc('\n');
+    kputc('\n');
+
+    kprintf("Initializing paging...");
+
+    Paging_Init_PageDir();
+
+    Paging_IdentityMap_PageTable(0 * MB, Supervisor, &page_table_0[0]);
+    Paging_Add_PageTable(0, &page_table_0[0]);
+
+    Paging_LoadPageDirectory((uint32_t)&page_directory[0]);
+    // Paging_Enable();
+
+    kprintf(" | Done\n\n");
 
     EnableInterrupts();
 
     while(true)
     {
-        printf("user: ~$ ");
+        kprintf("user: ~$ ");
         char buffer[80];
-        gets(&buffer[0]);
+        kgets(&buffer[0]);
     }
 }

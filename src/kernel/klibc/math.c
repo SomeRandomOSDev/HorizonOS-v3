@@ -1,14 +1,14 @@
 #pragma once
 
-double floor(double x)
+double kfloor(double x)
 {
     int _x = (int)x;
     return (double)_x;
 }
 
-double ceil(double x)
+double kceil(double x)
 {
-    double floorX = floor(x);
+    double floorX = kfloor(x);
 
     if(x == floorX)
         return x;
@@ -16,12 +16,12 @@ double ceil(double x)
     return floorX + 1;
 }
 
-double fabs(double x)
+double kfabs(double x)
 {
     return (x < 0) ? -x : x;
 }
 
-double fmod(double x, double y) // Unsure
+double kfmod(double x, double y) // Unsure
 {
     while(x >= y)
         x -= y;

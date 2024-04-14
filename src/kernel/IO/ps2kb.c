@@ -2,7 +2,7 @@
 
 void PS2_KB_Init()
 {
-    memset(&kb_state, false, 128);
+    kmemset(&kb_state, false, 128);
 }
 
 bool PS2_KB_ResetKeyboard()

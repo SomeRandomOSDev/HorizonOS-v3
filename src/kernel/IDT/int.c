@@ -10,26 +10,26 @@ void kernelPanic(uint8_t intNb, uint8_t errorCode)
     UpdateCursor();
     HideCursor();
     textColor = (FG_LIGHTRED | BG_BLUE);
-    puts("Kernel panic\n\n\t");
+    kputs("Kernel panic\n\n\t");
     textColor = (FG_WHITE | BG_BLUE);
-    printf("Exception number: %u\n\n\t", intNb);
-    printf("Error:       %s\n\t", errorString[intNb]);
-    printf("Error code:  0x%x\n\n\t", errorCode);
+    kprintf("Exception number: %u\n\n\t", intNb);
+    kprintf("Error:       %s\n\t", errorString[intNb]);
+    kprintf("Error code:  0x%x\n\n\t", errorCode);
 
-    // printf("cr0:         0x%x\n\t", GetCR0());
-    // printf("cr2:         0x%x\n\t", GetCR2());
-    // printf("cr3:         0x%x\n\n\t", GetCR3());
+    // kprintf("cr0:         0x%x\n\t", GetCR0());
+    // kprintf("cr2:         0x%x\n\t", GetCR2());
+    // kprintf("cr3:         0x%x\n\n\t", GetCR3());
 
-    // printf("eip:         0x%x\n\t", currTask->registers.eip);
-    // printf("cs:          0x%x\n\t", currTask->registers.cs);
-    // printf("ds:          0x%x\n\t", currTask->registers.ds);
-    // printf("ss:          0x%x\n\n\t", currTask->registers.ss);
+    // kprintf("eip:         0x%x\n\t", currTask->registers.eip);
+    // kprintf("cs:          0x%x\n\t", currTask->registers.cs);
+    // kprintf("ds:          0x%x\n\t", currTask->registers.ds);
+    // kprintf("ss:          0x%x\n\n\t", currTask->registers.ss);
 
-    // printf("task esp:    0x%x\n\t", currTask->registers.useresp);
+    // kprintf("task esp:    0x%x\n\t", currTask->registers.useresp);
 
-    // printf("esp:         0x%x\n\t", currTask->registers.esp);
-    // printf("ebp:         0x%x\n\t", currTask->registers.ebp);
-    // printf("stack size:  %i bytes\n\t", currTask->registers.ebp - currTask->registers.esp);
+    // kprintf("esp:         0x%x\n\t", currTask->registers.esp);
+    // kprintf("ebp:         0x%x\n\t", currTask->registers.ebp);
+    // kprintf("stack size:  %i bytes\n\t", currTask->registers.ebp - currTask->registers.esp);
     halt();
 }
 
@@ -76,7 +76,7 @@ void InterruptHandler(struct IntParams params)
         switch(params.eax)
         {
         case 0:
-            putc((char)params.ebx);
+            kputc((char)params.ebx);
             break;
         }
     }

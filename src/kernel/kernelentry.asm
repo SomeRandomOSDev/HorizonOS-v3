@@ -1,3 +1,5 @@
+bits 32
+
 ALIGNMENT equ 1
 MEMINFO equ  (1 << 1)   
 FLAGS equ (ALIGNMENT | MEMINFO)
@@ -10,10 +12,9 @@ dd FLAGS
 dd CHECKSUM
 
 section .text
-extern kmain
+extern kernel
 global _start
 _start:
-bits 32
 	mov ebp, stack_top
 	mov esp, stack_top
 
@@ -22,7 +23,7 @@ bits 32
 	push eax ; magic number
 	push ebx ; multiboot info
 
-	call kmain
+	call kernel
 
 	add esp, 8 ; clean up stack
 

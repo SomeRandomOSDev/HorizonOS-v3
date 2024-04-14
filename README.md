@@ -1,17 +1,19 @@
 # HorizonOS-v3
  A (very) simple x86 hobby operating system written in C and ASM (Intel Syntax)
 
+## Dependencies
+
 ## Installation
-To build "horizonos.iso"
+To build "horizonos.iso" on Ubuntu or WSL :
 ```sh
-make all
+make -s
 ```
  
 ## Features
 - ✅ Implement basic text output
     - ✅ putc
     - ✅ puts
-    - ✅ printf
+    - ✅ printf (kinda)
 - ✅ Create a basic memory manager
     - ✅ malloc
     - ✅ free

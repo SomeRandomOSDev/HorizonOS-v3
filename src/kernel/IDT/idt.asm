@@ -1,3 +1,6 @@
+bits 32
+section .text
+
 global LoadIDT
 extern _idtr
 ; void LoadIDT()

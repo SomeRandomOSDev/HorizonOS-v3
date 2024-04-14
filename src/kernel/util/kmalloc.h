@@ -120,7 +120,7 @@ void* kmalloc(size_t size)
     if(size == 0)
         return NULL;
 
-    uint32_t numBlocks = ceil(size / (float)blockSize);
+    uint32_t numBlocks = kceil(size / (float)blockSize);
     uint32_t blockNum = 0;
     uint32_t totalContiguousBlocks = 0;
     
@@ -157,7 +157,7 @@ void* kmalloc(size_t size)
 void* kcalloc(size_t nitems, size_t size)
 {
     void* ptr = kmalloc(nitems * size);
-    memset(ptr, 0, nitems * size);
+    kmemset(ptr, 0, nitems * size);
     return ptr;
 }
 

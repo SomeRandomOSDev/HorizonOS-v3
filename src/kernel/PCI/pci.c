@@ -73,13 +73,13 @@ void PCI_ScanBus(uint8_t bus)
             {
                 if(!anyDevices)
                 {
-                    printf("Bus %u:\n", bus);
+                    kprintf("Bus %u:\n", bus);
                     anyDevices = true;
                 }
                 char* classStr = PCI_class_str[commonHeader.classCode];
                 if(!classStr)
                     classStr = "Reserved";
-                printf("%x.%x \t %d \t | %x \t %x %x:%x %x:%x | %s\n", 
+                kprintf("%x.%x \t %d \t | %x \t %x %x:%x %x:%x | %s\n", 
                 j, k, commonHeader.headerType & 0b1111111, commonHeader.classCode, commonHeader.subClass, commonHeader.vendorID, commonHeader.deviceID, subVendorID, subDeviceID, classStr);
             }
             else
@@ -91,7 +91,7 @@ void PCI_ScanBus(uint8_t bus)
 
 void PCI_ScanBuses()
 {
-    // printf("Device.Func Header | Class SubClass VendID:DevID SubSysVendID:SubSysDevID\n");
+    // kprintf("Device.Func Header | Class SubClass VendID:DevID SubSysVendID:SubSysDevID\n");
     
     struct PCI_Common commonHeader;
     PCI_CheckDevice(0, 0, 0, &commonHeader, NULL, NULL);

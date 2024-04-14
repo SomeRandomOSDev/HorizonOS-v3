@@ -1,6 +1,6 @@
 #pragma once
 
-void* memchr(const void* str, int c, size_t n)
+void* kmemchr(const void* str, int c, size_t n)
 {
     void* out = NULL;
     for(size_t i = 0; i < n; i++)
@@ -14,7 +14,7 @@ void* memchr(const void* str, int c, size_t n)
     return out;
 }
 
-int memcmp(const void* str1, const void* str2, size_t n)
+int kmemcmp(const void* str1, const void* str2, size_t n)
 {
     for(uint64_t i = 0; i < n; i++)
     {
@@ -27,7 +27,7 @@ int memcmp(const void* str1, const void* str2, size_t n)
     return 0; 
 }
 
-void* memcpy(void* dest, const void* src, size_t n)
+void* kmemcpy(void* dest, const void* src, size_t n)
 {
     for(size_t i = 0; i < n; i++)
         // ((uint8_t*)dest)[i] = ((uint8_t*)src)[i];
@@ -38,7 +38,7 @@ void* memcpy(void* dest, const void* src, size_t n)
 
 // void *memmove(void *dest, const void *src, size_t n);
 
-void* memset(void* ptr, int value, size_t count)
+void* kmemset(void* ptr, int value, size_t count)
 {
     for(size_t i = 0; i < count; i++)
         ((uint8_t*)ptr)[i] = (uint8_t)value;
@@ -46,7 +46,7 @@ void* memset(void* ptr, int value, size_t count)
     return ptr;
 }
 
-int strcmp(const char* str1, const char* str2)
+int kstrcmp(const char* str1, const char* str2)
 {
     while(*str1 != 0 && *str2 != 0)
     {
